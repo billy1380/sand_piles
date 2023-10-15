@@ -144,7 +144,7 @@ class Sand {
     _testAndAdd(at, exceeding!);
   }
 
-  static Builder builder() {
+  static Builder get builder {
     return Builder();
   }
 

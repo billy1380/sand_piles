@@ -51,8 +51,8 @@ void test8() {
 }
 
 void test(String name, Tileable type, List<int> sand1, List<int> sand2) {
-  Sand g1 = Sand.builder().shape(Tileable.square).grains(sand1).build();
-  Sand g2 = Sand.builder().shape(Tileable.square).grains(sand2).build();
+  Sand g1 = Sand.builder.shape(Tileable.square).grains(sand1).build();
+  Sand g2 = Sand.builder.shape(Tileable.square).grains(sand2).build();
   Sand gT = g2.sum(g1);
 
   while (gT.topple()) {
