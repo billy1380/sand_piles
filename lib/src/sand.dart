@@ -8,6 +8,7 @@
 //
 import 'dart:collection';
 import 'dart:math';
+import 'package:logging/logging.dart';
 import 'package:willshex/willshex.dart';
 
 import 'package:sand_piles/sand_piles.dart';
@@ -43,6 +44,8 @@ class Builder {
 }
 
 class Sand {
+  static final Logger _log = Logger("Sand");
+
   Sand._();
 
   Tileable? _shape;
@@ -55,14 +58,13 @@ class Sand {
     bool toppled = false;
 
     if (exceeding != null && exceeding!.isNotEmpty) {
-      print("need to topple");
-      //			print(this);
+      _log.info("need to topple");
 
       int neighbourIndex;
       for (int at in exceeding!) {
-        print("processessing $at");
+        _log.fine("processessing $at");
 
-        piles!.get(at)!.value -= _shape!.sides;
+        piles![at]!.value -= _shape!.sides;
 
         _testAndAdd(at, exceedingNext!);
 
@@ -75,16 +77,14 @@ class Sand {
             _testAndAdd(neighbourIndex, exceedingNext!);
           }
         }
-
-        //print(this);
       }
 
       _swapExceedingLists();
 
       toppled = true;
 
-      print("toppled");
-      print(this);
+      _log.info("toppled");
+      _log.finest(this);
     }
 
     return toppled;
@@ -156,7 +156,7 @@ class Sand {
     return piles!.get(at)!.value;
   }
 
-  Sand sum(Sand g1) {
+  Sand operator +(Sand g1) {
     if (g1._shape != _shape) {
       throw Exception("Runtime: Types are not compatible");
     }

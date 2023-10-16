@@ -1,6 +1,12 @@
+import 'package:logging/logging.dart';
 import 'package:sand_piles/sand_piles.dart';
+import 'package:willshex/willshex.dart';
+
+final Logger _log = Logger("main");
 
 void main() {
+  setupLogging();
+
   test1();
   test2();
   test3();
@@ -53,11 +59,15 @@ void test8() {
 void test(String name, Tileable type, List<int> sand1, List<int> sand2) {
   Sand g1 = Sand.builder.shape(Tileable.square).grains(sand1).build();
   Sand g2 = Sand.builder.shape(Tileable.square).grains(sand2).build();
-  Sand gT = g2.sum(g1);
+  Sand gT = g2 + g1;
+
+  _log.fine(gT);
 
   while (gT.topple()) {
-    // work done in topple!
+    _log.info("more toppling required");
+    _log.fine(gT);
   }
-  print(name);
-  print(gT);
+
+  _log.info("$name complete");
+  _log.fine(gT);
 }
