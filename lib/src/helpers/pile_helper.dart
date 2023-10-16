@@ -55,7 +55,7 @@ class PileHelper {
     if (neighbour < 0) {
       neighbour = -1;
     } else {
-      if ((nth == 0 || nth == 3) && neighbour / x != row) {
+      if ((nth == 0 || nth == 3) && neighbour ~/ x != row) {
         neighbour = -1;
       }
     }
@@ -86,7 +86,7 @@ class PileHelper {
     if (neighbour < 0) {
       neighbour = -1;
     } else {
-      if ((nth == 0 || nth == 2) && neighbour / x != row) {
+      if ((nth == 0 || nth == 2) && neighbour ~/ x != row) {
         neighbour = -1;
       }
     }
@@ -138,7 +138,7 @@ class PileHelper {
         offRow = 2;
       }
 
-      if (nth != offRow && neighbour / x != row) {
+      if (nth != offRow && neighbour ~/ x != row) {
         neighbour = -1;
       }
     }

@@ -34,7 +34,7 @@ class Builder {
   }
 
   Builder itemsPerRow(int itemsPerRow) {
-    g.itemsPerRow = itemsPerRow;
+    g._itemsPerRow = itemsPerRow;
     return this;
   }
 
@@ -49,32 +49,32 @@ class Sand {
   Sand._();
 
   Tileable? _shape;
-  SparseArray<Pile>? piles;
-  HashSet<int>? exceeding;
-  HashSet<int>? exceedingNext;
-  int itemsPerRow = -1;
+  SparseArray<Pile>? _piles;
+  HashSet<int>? _exceeding;
+  HashSet<int>? _exceedingNext;
+  int _itemsPerRow = -1;
 
   bool topple() {
     bool toppled = false;
 
-    if (exceeding != null && exceeding!.isNotEmpty) {
+    if (_exceeding != null && _exceeding!.isNotEmpty) {
       _log.info("need to topple");
 
       int neighbourIndex;
-      for (int at in exceeding!) {
+      for (int at in _exceeding!) {
         _log.fine("processessing $at");
 
-        piles![at]!.value -= _shape!.sides;
+        _piles![at]!.value -= _shape!.sides;
 
-        _testAndAdd(at, exceedingNext!);
+        _testAndAdd(at, _exceedingNext!);
 
         for (int i = 0; i < _shape!.sides; i++) {
           neighbourIndex = _neighbour(i, at);
 
-          if (neighbourIndex >= 0 && neighbourIndex < piles!.length) {
-            piles!.get(neighbourIndex)!.value += 1;
+          if (neighbourIndex >= 0 && neighbourIndex < _piles!.length) {
+            _piles!.get(neighbourIndex)!.value += 1;
 
-            _testAndAdd(neighbourIndex, exceedingNext!);
+            _testAndAdd(neighbourIndex, _exceedingNext!);
           }
         }
       }
@@ -91,15 +91,15 @@ class Sand {
   }
 
   void _swapExceedingLists() {
-    HashSet<int> temp = exceeding!;
+    HashSet<int> temp = _exceeding!;
     temp.clear();
 
-    exceeding = exceedingNext;
-    exceedingNext = temp;
+    _exceeding = _exceedingNext;
+    _exceedingNext = temp;
   }
 
   void _testAndAdd(int at, HashSet<int> list) {
-    if (piles!.get(at)!.value > 3) {
+    if (_piles!.get(at)!.value > 3) {
       list.add(at);
     } else {
       if (list.contains(at)) {
@@ -113,13 +113,13 @@ class Sand {
 
     switch (_shape!) {
       case Tileable.triangle:
-        neighbour = PileHelper.neighbourTriangle(nth, at, getItemsPerRow());
+        neighbour = PileHelper.neighbourTriangle(nth, at, itemsPerRow);
         break;
       case Tileable.square:
-        neighbour = PileHelper.neighbourSquare(nth, at, getItemsPerRow());
+        neighbour = PileHelper.neighbourSquare(nth, at, itemsPerRow);
         break;
       case Tileable.hexagon:
-        neighbour = PileHelper.neighbourHexagon(nth, at, getItemsPerRow());
+        neighbour = PileHelper.neighbourHexagon(nth, at, itemsPerRow);
         break;
     }
 
@@ -127,21 +127,21 @@ class Sand {
   }
 
   void add(int grains, int at) {
-    if (piles == null) {
-      piles = SparseArray<Pile>();
-      exceeding = HashSet<int>();
-      exceedingNext = HashSet<int>();
+    if (_piles == null) {
+      _piles = SparseArray<Pile>();
+      _exceeding = HashSet<int>();
+      _exceedingNext = HashSet<int>();
     }
 
     Pile? s;
-    if ((s = piles!.get(at)) != null) {
+    if ((s = _piles!.get(at)) != null) {
       s!.value += grains;
     } else {
       s = Pile(0, grains);
-      piles![at] = s;
+      _piles![at] = s;
     }
 
-    _testAndAdd(at, exceeding!);
+    _testAndAdd(at, _exceeding!);
   }
 
   static Builder get builder {
@@ -153,7 +153,7 @@ class Sand {
   }
 
   int grains(int at) {
-    return piles!.get(at)!.value;
+    return _piles!.get(at)!.value;
   }
 
   Sand operator +(Sand g1) {
@@ -164,32 +164,32 @@ class Sand {
     Sand r = Sand._();
     r._shape = _shape;
 
-    if (piles != null) {
-      for (int i = 0; i < piles!.length; i++) {
-        r.add(piles!.get(i)!.value + g1.piles!.get(i)!.value, i);
+    if (_piles != null) {
+      for (int i = 0; i < _piles!.length; i++) {
+        r.add(_piles!.get(i)!.value + g1._piles!.get(i)!.value, i);
       }
     }
 
     return r;
   }
 
-  int getItemsPerRow() => itemsPerRow > 0
-      ? itemsPerRow
-      : (itemsPerRow = sqrt(piles!.length).toInt());
+  int get itemsPerRow => _itemsPerRow > 0
+      ? _itemsPerRow
+      : (_itemsPerRow = sqrt(_piles!.length).toInt());
 
   @override
   bool operator ==(Object other) {
     bool equal = super == (other);
     if (!equal && other is Sand) {
-      equal = piles == other.piles;
+      equal = _piles == other._piles;
 
       if (!equal) {
-        equal = piles!.length == other.piles!.length;
+        equal = _piles!.length == other._piles!.length;
 
         if (equal) {
-          for (int i = 0; i < piles!.length; i++) {
-            Pile? pv = piles!.get(piles!.keyAt(i));
-            Pile? objPv = other.piles!.get(piles!.keyAt(i));
+          for (int i = 0; i < _piles!.length; i++) {
+            Pile? pv = _piles!.get(_piles!.keyAt(i));
+            Pile? objPv = other._piles!.get(_piles!.keyAt(i));
 
             if ((pv == null) || (objPv == null) || (pv.value != objPv.value)) {
               equal = false;
@@ -206,9 +206,9 @@ class Sand {
   @override
   String toString() {
     StringBuffer b = StringBuffer();
-    int x = getItemsPerRow();
+    int x = itemsPerRow;
 
-    for (int i = 0; i < piles!.length; i++) {
+    for (int i = 0; i < _piles!.length; i++) {
       if (i % x == 0 && b.isNotEmpty) {
         b = StringBuffer(b.toString().substring(0, b.length - 1));
         b.write("\n");
@@ -219,7 +219,7 @@ class Sand {
         b.write("\n");
       }
 
-      b.write(piles!.get(i)!.value);
+      b.write(_piles!.get(i)!.value);
       b.write("|");
     }
     b.write(b.length - 1);
